@@ -44,7 +44,8 @@ namespace Receitas.Controllers
 
             foreach (var i in arrayIngredientes)
             {
-                listaIngredientes.Add(int.Parse(i));
+                if(i != "")
+                    listaIngredientes.Add(int.Parse(i));
             }
 
             List<Receita> listaReceitas = new List<Receita>();
@@ -65,7 +66,7 @@ namespace Receitas.Controllers
 
 
             var listaDeRepetidos = listaReceitas.GroupBy(x => x)
-                    .Where(x => x.Count() == arrayIngredientes.Length)
+                    .Where(x => x.Count() == listaIngredientes.Count)
                     .Select(x => x.Key)
                     .ToList();
 

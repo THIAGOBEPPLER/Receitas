@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Receitas.Data;
 using Receitas.Entities;
 using Receitas.Models;
@@ -51,7 +52,7 @@ namespace Receitas.Controllers
             var query =
                (from r in bd.Receitas
                 where r.Id == id
-                select r).SingleOrDefault();
+                select r).AsNoTracking().SingleOrDefault();
 
             if (query == null)
                 return ("Receita nao encontrada.");
@@ -72,9 +73,15 @@ namespace Receitas.Controllers
 
             var limpa = (from r in bd.ReceitasIngredientes
                          where r.ReceitaId == id
-                         select r);
+                         select r).ToList();
 
-            bd.ReceitasIngredientes.RemoveRange(limpa);
+            foreach (var item in limpa)
+            {
+                bd.ReceitasIngredientes.Remove(item);
+
+            }
+
+            // bd.ReceitasIngredientes.RemoveRange(limpa);
             // bd.SaveChanges();
 
             
@@ -106,6 +113,8 @@ namespace Receitas.Controllers
 
             bd.Receitas.Remove(receita);
             bd.SaveChanges();
+
+            
 
 
             return Ok("Receita deletada.");
